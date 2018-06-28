@@ -14,8 +14,11 @@ class ProductsController < ApplicationController
     render "all_products.json.jbuilder"
   end
 
-  def display_all_titles
-    @products = Product.all
-    render "just_titles.json.jbuilder"
+  def get_by_id_method
+    id_input = params["id"]
+    @product = Product.find_by(id: id_input)
+    render "first_album.json.jbuilder"
   end
+
+
 end
