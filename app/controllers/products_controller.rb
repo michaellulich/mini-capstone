@@ -1,24 +1,41 @@
 class ProductsController < ApplicationController
-  def first_product_method
-    @product = Product.third
-    render "first_album.json.jbuilder"
-  end
-
-  def third_product_method
-    @product = Product.find_by(id: 3)
-    render "first_album.json.jbuilder"
-  end
-
-  def all_products_method
+  
+  def index
     @products = Product.all
-    render "all_products.json.jbuilder"
+    render "index.json.jbuilder"
   end
 
-  def get_by_id_method
+  def show
     id_input = params["id"]
     @product = Product.find_by(id: id_input)
-    render "first_album.json.jbuilder"
+    render "show.json.jbuilder"
   end
 
+  def create
+    @product = Product.new(
+        name: params[:name],
+        price: params[:price],
+        image_url: params[:image_url],
+        description: params[:description]
+      )
+    @product.save
+    render "show.json.jbuilder"
+  end
+
+  def update
+    @product = Product.find_by(id: params[:id])
+    @product.name = params[:name] || @product.name
+    @product.price = params[:price] || @product.price
+    @product.image_url = params[:image_url] || @product.image_url
+    @product.description = params[:description] || @product.description
+    @product.save
+    render "show.json.jbuilder"
+  end
+
+  def destroy
+    @product = Product.find_by(id: params[:id])
+    @product.destroy
+    render json: {message: "Product successfully destroyed."}
+  end
 
 end
