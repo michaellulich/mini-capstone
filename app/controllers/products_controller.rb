@@ -2,6 +2,14 @@ class ProductsController < ApplicationController
   
   def index
     @products = Product.all
+    search_terms = params[:q]
+    
+    if search_terms
+      @products = @products.where("name ILIKE ?", "%#{search_terms}%")
+    end
+
+    @products = @products.order(:id => :asc)
+
     render "index.json.jbuilder"
   end
 
@@ -15,11 +23,13 @@ class ProductsController < ApplicationController
     @product = Product.new(
         name: params[:name],
         price: params[:price],
-        image_url: params[:image_url],
         description: params[:description],
-        in_stock: params[:in_stock]
+        in_stock: params[:in_stock],
+        supplier_id: 1
       )
     if @product.save
+      image = Image.new(img_url: params[:image_url], product_id: @product.id)
+      image.save
       render "show.json.jbuilder"
     else
       render json: {errors: @product.errors.full_messages}, status: :unprocessable_entity
@@ -31,7 +41,6 @@ class ProductsController < ApplicationController
     @product = Product.find_by(id: params[:id])
     @product.name = params[:name] || @product.name
     @product.price = params[:price] || @product.price
-    @product.image_url = params[:image_url] || @product.image_url
     @product.description = params[:description] || @product.description
     @product.in_stock = params[:in_stock] || @product.in_stock
     
