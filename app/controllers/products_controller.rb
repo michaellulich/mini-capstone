@@ -1,7 +1,7 @@
 class ProductsController < ApplicationController
   
   def index
-    @products = Product.all
+    @products = Product.all.order(:id)
     search_terms = params[:q]
     
     if search_terms
@@ -17,6 +17,7 @@ class ProductsController < ApplicationController
     id_input = params["id"]
     @product = Product.find_by(id: id_input)
     render "show.json.jbuilder"
+
   end
 
   def create
@@ -25,7 +26,8 @@ class ProductsController < ApplicationController
         price: params[:price],
         description: params[:description],
         in_stock: params[:in_stock],
-        supplier_id: 1
+        supplier_id: 1,
+        user_id: current_user.id
       )
     if @product.save
       image = Image.new(img_url: params[:image_url], product_id: @product.id)
